@@ -1,0 +1,8 @@
+{
+    "aws_access_key": "",
+    "aws_secret_key": "",
+    "aws_region": "eu-central-1",
+
+    "jenkins_admin_user": "admin",
+    "jenkins_admin_password": "admin"
+}

@@ -1,0 +1,6 @@
+---
+- src: geerlingguy.pip
+- src: geerlingguy.docker
+- src: geerlingguy.java
+- src: geerlingguy.jenkins
+- src: chromatichq.aws-cli

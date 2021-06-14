@@ -1,0 +1,27 @@
+---
+- name: Job directories are present
+  file:
+    path: "{{ jenkins_home }}/jobs/{{ item }}"
+    state: directory
+    mode: 0777
+    owner: "{{ jenkins_process_user }}"
+    group: "{{ jenkins_process_group }}"
+  with_items: "{{ jenkins_jobs }}"
+
+- name: Jobs are present
+  copy:
+    src: "{{ jenkins_source_dir_jobs }}/{{ item }}/config.xml"
+    dest: "{{ jenkins_home }}/jobs/{{ item }}/config.xml"
+    mode: 0777
+    owner: "{{ jenkins_process_user }}"
+    group: "{{ jenkins_process_group }}"
+  with_items: "{{ jenkins_jobs }}"
+
+- name: Jenkins is started
+  service:
+    name: jenkins
+    state: started
+  changed_when: false
+
+- name: Restart Jenkins
+  service: name=jenkins state=restarted

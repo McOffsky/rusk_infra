@@ -1,0 +1,17 @@
+---
+- name: Update apt packages
+  apt:
+    update_cache: yes
+    cache_valid_time: 86400 
+
+- name: Install jq
+  apt:
+    name: jq
+    state: present
+
+- name: Install acl
+  apt:
+    name: acl
+    state: present
+
+    

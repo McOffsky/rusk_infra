@@ -1,0 +1,40 @@
+---
+- name: Fix srv dir permissions
+  file: path=/srv owner={{jenkins_process_user}} group={{ jenkins_process_group }} mode=0766 state=directory recurse=yes
+
+- name: Create .ssh directory for {{ jenkins_process_user }}
+  file:
+    path: "/var/lib/{{ jenkins_process_user }}/.ssh"
+    state: directory
+    owner: "{{ jenkins_process_user }}"
+    group: "{{ jenkins_process_group }}"
+    mode: 0700
+
+- name: Copy keys to .ssh directory
+  become: true
+  become_user: "{{ jenkins_process_user }}"
+  shell: cp -r /srv/keys/{{ jenkins_process_user }}/* ~/.ssh/
+
+- name: Fix keys permissions
+  file: 
+    path: "/var/lib/{{ jenkins_process_user }}/.ssh"
+    owner: "{{jenkins_process_user}}"
+    group: "{{ jenkins_process_group }}"
+    mode: 0600
+    state: directory 
+    recurse: yes
+
+- name: Fix .ssh directory permissions
+  file: 
+    path: "/var/lib/{{ jenkins_process_user }}/.ssh"
+    owner: "{{jenkins_process_user}}"
+    group: "{{ jenkins_process_group }}"
+    mode: 0700
+    state: directory 
+
+- name: Register keys
+  become: true
+  become_user: "{{ jenkins_process_user }}"
+  shell: eval `ssh-agent -s` && ssh-add -k
+
+  

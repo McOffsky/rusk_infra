@@ -1,0 +1,9 @@
+---
+- name: Adding existing user '{{ jenkins_process_user }}' to docker group
+  user:
+    name: '{{ jenkins_process_user }}'
+    groups: docker
+    append: yes
+
+- name: Restart Jenkins
+  service: name=jenkins state=restarted

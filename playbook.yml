@@ -1,0 +1,60 @@
+---
+- hosts: all
+  become: true
+  vars:
+    pip_install_packages:
+      - name: docker
+  roles:
+    - ansible/warmup
+    - geerlingguy.pip
+    - geerlingguy.docker
+
+- hosts: web
+  become: true
+  vars:
+    aws_users:
+      - name: ubuntu
+        group: ubuntu
+        region: "{{ aws_region }}"
+        output: json
+        home: /home
+    aws_access_key_id: "{{ aws_access_key }}"
+    aws_secret_access_key: "{{ aws_secret_key }}"
+  roles:
+    - chromatichq.aws-cli
+    - ansible/standalone_swarm
+
+- hosts: jenkins
+  become: true
+  vars:
+    jenkins_prefer_lts: true
+    jenkins_hostname: "{{ inventory_hostname }}"
+    jenkins_port: 8080
+    jenkins_home: /home/jenkins/data
+    jenkins_source_dir_jobs: "{{ playbook_dir }}/jenkins/jobs"
+    jenkins_admin_username: "{{ jenkins_admin_user }}"
+    jenkins_admin_password: "{{ jenkins_admin_password }}"
+    jenkins_jobs:
+      - rusk_app
+    jenkins_plugins:
+      - git
+      - workflow-aggregator
+      - docker-workflow
+      - ssh-steps
+    jenkins_plugins_install_dependencies: true
+
+    aws_users:
+      - name: jenkins
+        group: jenkins
+        region: "{{ aws_region }}"
+        output: json
+        home: /var/lib
+    aws_access_key_id: "{{ aws_access_key }}"
+    aws_secret_access_key: "{{ aws_secret_key }}"
+  roles:
+    - geerlingguy.java
+    - geerlingguy.jenkins
+    - ansible/jenkins_install_jobs
+    - ansible/jenkins_docker_group
+    - chromatichq.aws-cli
+    - ansible/jenkins_keys
